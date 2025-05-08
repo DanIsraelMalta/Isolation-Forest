@@ -23,8 +23,8 @@ namespace IsolationForest {
 		**/
 		template<class NODE>
 		concept INode = std::is_integral_v<typename NODE::size_type> &&
-			              std::is_floating_point_v<typename NODE::value_type> &&
-			              requires (NODE node) {
+			            std::is_floating_point_v<typename NODE::value_type> &&
+			            requires (NODE node) {
 			std::is_same_v<decltype(node.split_value), typename NODE::value_type>; // node split value
 			std::is_same_v<decltype(node.left), typename NODE::size_type>;         // how many "left" partitions the node underwent
 			std::is_same_v<decltype(node.right), typename NODE::size_type>;        // how many "right" partitions the node underwent
@@ -35,10 +35,10 @@ namespace IsolationForest {
 		**/
 		template<class TREE, class ITER>
 		concept ITree = INode<typename TREE::node_type> &&
-			              std::is_same_v<typename TREE::size_type, typename TREE::node_type::size_type>&&
-			              std::is_same_v<typename TREE::value_type, typename TREE::node_type::value_type>&&
-			              std::is_same_v<typename TREE::tree_type, std::vector<typename TREE::node_type>>&&
-			              requires (TREE tree, ITER it, TREE::value_type value, TREE::size_type size) {
+			            std::is_same_v<typename TREE::size_type, typename TREE::node_type::size_type>&&
+			            std::is_same_v<typename TREE::value_type, typename TREE::node_type::value_type>&&
+			            std::is_same_v<typename TREE::tree_type, std::vector<typename TREE::node_type>>&&
+			            requires (TREE tree, ITER it, TREE::value_type value, TREE::size_type size) {
 
 			/**
 			* \brief return root node id
@@ -68,9 +68,9 @@ namespace IsolationForest {
 		**/
 		template<class FOREST, class ITER>
 		concept IForest = ITree<typename FOREST::tree_type, ITER>&&
-			                std::is_same_v<typename FOREST::size_type, typename FOREST::tree_type::size_type>&&
-			                std::is_same_v<typename FOREST::value_type, typename FOREST::tree_type::value_type>&&
-			                requires (FOREST forest, ITER it, FOREST::value_type value, std::size_t size) {
+			              std::is_same_v<typename FOREST::size_type, typename FOREST::tree_type::size_type>&&
+			              std::is_same_v<typename FOREST::value_type, typename FOREST::tree_type::value_type>&&
+			              requires (FOREST forest, ITER it, FOREST::value_type value, std::size_t size) {
 
 			/**
 			* \brief build forest from data given by range iterators to a given collection
@@ -130,8 +130,8 @@ namespace IsolationForest {
 			// ITree is regular
 			ITree(const ITree&) = default;
 			ITree(ITree&&) = default;
-			ITree& operator =(const ITree&) = default;
-			ITree& operator =(ITree&&) = default;
+			ITree& operator =(const ITree&) = delete;
+			ITree& operator =(ITree&&) = delete;
 			~ITree() = default;
 
 			/**
@@ -200,12 +200,12 @@ namespace IsolationForest {
 						const std::size_t anchor_index{ static_cast<std::size_t>(left + rand() % (right - left)) };
 						const value_type& anchor{ data[anchor_index] };
 						const iter_t anchor_iter{ std::partition(data.begin() + left, data.begin() + right,
-																                     [&anchor](const value_type& v) -> bool { return (v < anchor); }) };
+																[&anchor](const value_type& v) -> bool { return (v < anchor); }) };
 						const size_type mid{ static_cast<size_type>(std::distance(data.begin(), anchor_iter)) };
 						const node_type node{
 							.split_value = anchor,
-			        .left = this->build_recursively(data, left, mid, depth + 1),
-			        .right = this->build_recursively(data, mid, right, depth + 1)
+			                .left = this->build_recursively(data, left, mid, depth + 1),
+			                .right = this->build_recursively(data, mid, right, depth + 1)
 						};
 
 						this->tree.push_back(node);
