@@ -1,2 +1,2 @@
 # Isolation-Forest
-anomaly detection using binary trees
+c++20 header only implementation of anomaly detection via isolation forest.
